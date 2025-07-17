@@ -15,29 +15,23 @@ export async function login(email, password) {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         console.log("ログイン成功:", userCredential.user);
-        // localStorageにログイン状態を保存する必要がなければ削除可
-        localStorage.setItem("loggedIn", "true"); // LocalStorageはFirebaseとは独立した認証フローを想定する場合
+        // localStorage.setItem("loggedIn", "true"); // 削除
         return userCredential;
     } catch (error) {
         console.error("ログインエラー:", error.code, error.message);
-        localStorage.removeItem("loggedIn"); // エラー時は削除
-        throw error; // エラーを呼び出し元に伝える
+        // localStorage.removeItem("loggedIn"); // 削除
+        throw error;
     }
 }
 
-/**
- * 現在のユーザーをログアウトさせる
- * @returns {Promise<void>} ログアウト成功時のPromise
- */
 export async function logout() {
     try {
         await signOut(auth);
         console.log("ログアウト成功");
-        localStorage.removeItem("loggedIn"); // LocalStorageのログイン状態を削除
-        window.location.href = "index.html"; // ログアウト後、トップページへリダイレクト
+        // localStorage.removeItem("loggedIn"); // 削除
+        window.location.href = "index.html";
     } catch (error) {
-        console.error("ログアウトエラー:", error.code, error.message);
-        alert("ログアウト中にエラーが発生しました。");
+        // ...
     }
 }
 
