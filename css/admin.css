@@ -1,0 +1,106 @@
+body {
+    background: #f9f9f9; /* admin.html独自の背景色 */
+    padding: 1rem;
+}
+h1 {
+    color: #06C755;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+.logout {
+    text-align: right;
+    margin-bottom: 1rem;
+}
+button.logout-btn {
+    background: #c33;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+.topic-create, .topic-filter, .topic-list {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+/* input[type="text"], input[type="date"] は common.css で設定済みのため削除 */
+
+.topic-item {
+    border-bottom: 1px solid #ddd;
+    padding: 0.5rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+.topic-info {
+    flex: 1 1 60%;
+    cursor: pointer;
+}
+.topic-actions {
+    flex: 1 1 35%;
+    text-align: right;
+}
+.topic-actions > * {
+    margin-left: 0.5rem;
+}
+input[type="checkbox"] {
+    transform: scale(1.3);
+    margin-right: 0.3rem;
+    vertical-align: middle;
+}
+.small-btn {
+    background: #f44336;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.85rem;
+    border-radius: 5px;
+}
+.small-btn:hover {
+    background: #d32f2f;
+}
+.no-topics {
+    text-align: center;
+    color: #666;
+    margin-top: 1rem;
+}
+.answers-container {
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+    border-left: 3px solid #06C755;
+}
+.answer-item {
+    background: #e6ffe6;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+.answer-meta {
+    font-size: 0.8rem;
+    color: #333;
+    font-weight: bold;
+}
+.answer-message {
+    margin-top: 0.2rem;
+    white-space: pre-wrap;
+}
+.answer-delete-btn {
+    background: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    float: right;
+}
+.answer-delete-btn:hover {
+    background: #c9302c;
+}
