@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>回答者モード 管理ページ</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9;
+    padding: 1rem;
+  }
+  h1 {
+    color: #06C755;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .logout {
+    text-align: right;
+    margin-bottom: 1rem;
+  }
+  button.logout-btn {
+    background: #c33;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
+  .topic-create, .topic-filter, .topic-list {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+  input[type="text"], input[type="date"] {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  button {
+    background-color: #06C755;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #059a44;
+  }
+  .topic-item {
+    border-bottom: 1px solid #ddd;
+    padding: 0.5rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .topic-info {
+    flex: 1 1 60%;
+    cursor: pointer;
+  }
+  .topic-actions {
+    flex: 1 1 35%;
+    text-align: right;
+  }
+  .topic-actions > * {
+    margin-left: 0.5rem;
+  }
+  input[type="checkbox"] {
+    transform: scale(1.3);
+    margin-right: 0.3rem;
+    vertical-align: middle;
+  }
+  .small-btn {
+    background: #f44336;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.85rem;
+    border-radius: 5px;
+  }
+  .small-btn:hover {
+    background: #d32f2f;
+  }
+  .no-topics {
+    text-align: center;
+    color: #666;
+    margin-top: 1rem;
+  }
+  .answers-container {
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+    border-left: 3px solid #06C755;
+  }
+  .answer-item {
+    background: #e6ffe6;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+  }
+  .answer-meta {
+    font-size: 0.8rem;
+    color: #333;
+    font-weight: bold;
+  }
+  .answer-message {
+    margin-top: 0.2rem;
+    white-space: pre-wrap;
+  }
+  .answer-delete-btn {
+    background: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    float: right;
+  }
+  .answer-delete-btn:hover {
+    background: #c9302c;
+  }
+</style>
+</head>
+<body>
+
+<h1>回答者モード 管理ページ</h1>
+<div class="logout">
+  <button class="logout-btn" onclick="logout()">ログアウト</button>
+</div>
+
+<section class="topic-create">
+  <h2>話題作成</h2>
+  <label for="newTopicTitle">タイトル</label>
+  <input type="text" id="newTopicTitle" placeholder="新しい話題タイトル" />
+  <label for="newTopicDeadline">募集期限</label>
+  <input type="date" id="newTopicDeadline" />
+  <button onclick="createTopic()">話題を追加</button>
+</section>
+
+<section class="topic-filter">
+  <h2>話題絞り込み</h2>
+  <input type="text" id="filterKeyword" placeholder="タイトルで絞り込み" oninput="renderTopics()" />
+</section>
+
+<section class="topic-list">
+  <h2>話題一覧</h2>
+  <div id="topicsContainer"></div>
+</section>
+
+<script>
+  if (localStorage.getItem("loggedIn") !== "true") {
+    alert("ログインが必要です");
+    location.href = "login.html";
+  }
+
+  let topics = JSON.parse(localStorage.getItem("topics") || "[]");
+
+  function saveTopics() {
+    localStorage.setItem("topics", JSON.stringify(topics));
+  }
+
+  function createTopic() {
+    const titleInput = document.getElementById("newTopicTitle");
+    const deadlineInput = document.getElementById("newTopicDeadline");
+    const title = titleInput.value.trim();
+    const deadline = deadlineInput.value;
+
+    if (!title) {
+      alert("タイトルを入力してください");
+      return;
+    }
+    if (!deadline) {
+      alert("募集期限を選択してください");
+      return;
+    }
+
+    const newId = Date.now().toString();
+
+    topics.push({
+      id: newId,
+      title: title,
+      deadline: deadline,
+      viewed: false
+    });
+    saveTopics();
+    titleInput.value = "";
+    deadlineInput.value = "";
+    renderTopics();
+  }
+
+  function toggleViewed(topicId, checked) {
+    const topic = topics.find(t => t.id === topicId);
+    if (!topic) return;
+    topic.viewed = checked;
+    saveTopics();
+  }
+
+  function deleteTopic(topicId) {
+    if (!confirm("この話題と関連するすべての意見を削除しますか？")) return;
+    topics = topics.filter(t => t.id !== topicId);
+    localStorage.setItem("topics", JSON.stringify(topics));
+    localStorage.removeItem("answers_" + topicId);
+    renderTopics();
+  }
+
+  function deleteAnswer(topicId, index) {
+    const key = "answers_" + topicId;
+    let answers = JSON.parse(localStorage.getItem(key) || "[]");
+    if (!confirm("この回答を削除しますか？")) return;
+    answers.splice(index, 1);
+    localStorage.setItem(key, JSON.stringify(answers));
+    renderTopics(); // 再描画で回答リストも更新
+  }
+
+  function renderTopics() {
+    const container = document.getElementById("topicsContainer");
+    const filter = document.getElementById("filterKeyword").value.trim().toLowerCase();
+
+    container.innerHTML = "";
+
+    let filtered = topics;
+    if (filter) {
+      filtered = topics.filter(t => t.title.toLowerCase().includes(filter));
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<p class="no-topics">該当する話題がありません。</p>';
+      return;
+    }
+
+    filtered.forEach(topic => {
+      const div = document.createElement("div");
+      div.className = "topic-item";
+
+      const infoDiv = document.createElement("div");
+      infoDiv.className = "topic-info";
+      infoDiv.title = "クリックで回答一覧を表示/非表示";
+      infoDiv.innerHTML = `<strong>${topic.title}</strong> <small>（締切: ${topic.deadline}）</small> <small>回答数: ${getAnswerCount(topic.id)}</small>`;
+      infoDiv.style.userSelect = "none";
+      infoDiv.addEventListener("click", () => {
+        toggleAnswersVisibility(topic.id);
+      });
+
+      const actionsDiv = document.createElement("div");
+      actionsDiv.className = "topic-actions";
+
+      const viewedCheckbox = document.createElement("input");
+      viewedCheckbox.type = "checkbox";
+      viewedCheckbox.checked = topic.viewed || false;
+      viewedCheckbox.title = "閲覧済みマーク";
+      viewedCheckbox.addEventListener("change", e => {
+        toggleViewed(topic.id, e.target.checked);
+      });
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "削除";
+      delBtn.className = "small-btn";
+      delBtn.addEventListener("click", () => {
+        deleteTopic(topic.id);
+      });
+
+      actionsDiv.appendChild(viewedCheckbox);
+      actionsDiv.appendChild(delBtn);
+
+      div.appendChild(infoDiv);
+      div.appendChild(actionsDiv);
+
+      // 回答一覧エリア（最初は非表示）
+      const answersDiv = document.createElement("div");
+      answersDiv.id = `answers_${topic.id}`;
+      answersDiv.className = "answers-container";
+      answersDiv.style.display = "none";
+
+      div.appendChild(answersDiv);
+
+      container.appendChild(div);
+    });
+  }
+
+  function getAnswerCount(topicId) {
+    const key = "answers_" + topicId;
+    const answers = JSON.parse(localStorage.getItem(key) || "[]");
+    return answers.length;
+  }
+
+  function toggleAnswersVisibility(topicId) {
+    const answersDiv = document.getElementById(`answers_${topicId}`);
+    if (!answersDiv) return;
+    if (answersDiv.style.display === "block") {
+      answersDiv.style.display = "none";
+      answersDiv.innerHTML = "";
+    } else {
+      renderAnswers(topicId);
+      answersDiv.style.display = "block";
+    }
+  }
+
+  function renderAnswers(topicId) {
+    const answersDiv = document.getElementById(`answers_${topicId}`);
+    const key = "answers_" + topicId;
+    const answers = JSON.parse(localStorage.getItem(key) || "[]");
+
+    if (answers.length === 0) {
+      answersDiv.innerHTML = "<p>まだ回答はありません。</p>";
+      return;
+    }
+
+    answersDiv.innerHTML = "";
+    answers.forEach((ans, i) => {
+      const ansDiv = document.createElement("div");
+      ansDiv.className = "answer-item";
+
+      const metaDiv = document.createElement("div");
+      metaDiv.className = "answer-meta";
+      metaDiv.textContent = ans.name ? ans.name : "匿名";
+
+      const msgDiv = document.createElement("div");
+      msgDiv.className = "answer-message";
+      msgDiv.textContent = ans.message;
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "answer-delete-btn";
+      delBtn.textContent = "削除";
+      delBtn.addEventListener("click", () => {
+        deleteAnswer(topicId, i);
+      });
+
+      ansDiv.appendChild(delBtn);
+      ansDiv.appendChild(metaDiv);
+      ansDiv.appendChild(msgDiv);
+
+      answersDiv.appendChild(ansDiv);
+    });
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedIn");
+    location.href = "index.html";
+  }
+
+  renderTopics();
+</script>
+
+</body>
+</html>
