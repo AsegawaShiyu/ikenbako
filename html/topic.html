@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>話題に回答</title>
+  <link rel="stylesheet" href="../css/common.css"> <link rel="stylesheet" href="../css/topic.css">   </head>
+<body>
+  <header>
+    <h1>意見箱</h1>
+  </header>
+
+  <main>
+    <section id="topicHeader">
+      <h2 id="topicTitle">タイトル読み込み中...</h2>
+      <p id="topicDeadline"></p>
+    </section>
+
+    <section class="form-section">
+      <form id="answerForm">
+        <label>
+          名前（任意）:
+          <input type="text" id="username" placeholder="匿名可">
+        </label>
+        <label>
+          意見:
+          <textarea id="message" rows="4" required placeholder="ご意見を入力してください"></textarea>
+        </label>
+        <button type="submit">送信</button>
+      </form>
+    </section>
+
+    <section class="answers-section" id="answers" style="display: none">
+      <h3>あなたの投稿</h3>
+      <div id="answerList"></div>
+    </section>
+  </main>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/public.js"></script>
+</body>
+</html>
