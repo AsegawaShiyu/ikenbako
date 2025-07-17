@@ -1,40 +1,259 @@
+/* 共通で使う可能性のあるRoot変数 */
+:root {
+    --main-color: #06C755; /* LINEグリーンに似た色 */
+    --accent-color: #059a44; /* メインカラーの少し濃いバージョン */
+    --text-color: #333333;
+    --light-text-color: #666666;
+    --background-light: #F8F8F8;
+    --background-medium: #EBEBEB;
+    --card-background: #FFFFFF;
+    --border-color: #E0E0E0;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.12);
+    --border-radius-small: 8px;
+    --border-radius-medium: 12px;
+    --border-radius-large: 20px;
+    --font-family-primary: 'Noto Sans JP', sans-serif, 'Segoe UI', Tahoma, Geneva, Verdana;
+}
+
+/* Google Fontsの読み込み（例: Noto Sans JP） */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: sans-serif;
-    max-width: 600px; /* 全ページで共通の最大幅 */
-    margin: auto;
-    padding: 1rem;
-    background-color: #f2f2f2; /* 全体的な背景色として設定 */
+    margin: 0;
+    font-family: var(--font-family-primary);
+    background-color: var(--background-light); /* 全体的な背景色 */
+    color: var(--text-color);
+    line-height: 1.6;
+    display: flex; /* Flexboxでレイアウトの基礎を構築 */
+    flex-direction: column;
+    min-height: 100vh; /* 最小高さをビューポートの高さに */
 }
 
-input, textarea {
-    width: 100%;
-    margin-bottom: 0.5rem;
-    padding: 0.5rem; /* 全体的な入力フィールドのパディング */
-    border: 1px solid #ccc;
-    border-radius: 8px; /* 全体的な角丸設定 */
-    font-size: 1rem;
+/* 全体的なコンテナ */
+main {
+    max-width: 800px; /* 少し広げてゆとりを持たせる */
+    margin: 2rem auto; /* 上下の余白を増やし、中央寄せ */
+    padding: 0 1.5rem; /* 左右にパディング */
+    flex-grow: 1; /* コンテンツが少ない時にフッターを下部に固定 */
 }
 
-button {
-    background-color: #06C755;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
+h1, h2 {
+    color: var(--main-color);
+    font-weight: 700; /* 太字 */
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-top: 0.5rem;
+}
+
+h2 {
+    font-size: 1.8rem;
+    border-bottom: 2px solid var(--border-color); /* 区切り線 */
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Header Styles --- */
+header {
+    background: linear-gradient(135deg, var(--main-color), var(--accent-color)); /* グラデーション */
+    color: #fff;
+    padding: 1.5rem 1rem; /* 上下のパディングを増やす */
+    text-align: center;
+    box-shadow: 0 4px 10px var(--shadow-medium);
+}
+
+header h1 {
+    color: #fff; /* ヘッダー内のH1は白に */
+    margin-bottom: 0.8rem;
+}
+
+header nav {
+    display: flex;
+    justify-content: center; /* リンクを中央寄せ */
+    align-items: center;
+    padding-top: 0.5rem;
+    gap: 1.5rem; /* リンク間のスペース */
+}
+
+header nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem; /* 少し大きく */
+    opacity: 0.8;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-small);
+    transition: all 0.3s ease;
+}
+
+header nav a:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.15); /* ホバーエフェクト */
+    transform: translateY(-2px); /* 少し上に浮き上がる */
+}
+
+header nav a.primary-link {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.25); /* 強調表示 */
+}
+
+header nav a.primary-link:hover {
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+
+/* --- Section Styles --- */
+section {
+    margin-bottom: 2.5rem; /* セクション間の余白 */
+    background: var(--card-background); /* 背景色を統一 */
+    padding: 1.5rem 2rem; /* パディングを増やしてゆとりを持たせる */
+    border-radius: var(--border-radius-large); /* 大きめの角丸 */
+    box-shadow: 0 5px 15px var(--shadow-light); /* 影を強調 */
+}
+
+/* --- Topic Card Styles --- */
+.topic-card {
+    background: var(--card-background);
+    padding: 1.2rem 1.5rem; /* パディングを増やす */
+    border-radius: var(--border-radius-medium); /* 角丸 */
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px var(--shadow-light); /* やや柔らかい影 */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* アニメーション追加 */
+    border: 1px solid var(--border-color); /* 枠線 */
+}
+
+.topic-card:hover {
+    transform: translateY(-5px); /* 上に少し浮き上がる */
+    box-shadow: 0 8px 20px var(--shadow-medium); /* 影を強くする */
     cursor: pointer;
 }
 
-button:hover {
-    background-color: #059a44;
+.topic-card a {
+    text-decoration: none;
+    color: var(--main-color); /* リンクの色をメインカラーに */
+    font-weight: bold;
+    font-size: 1.2rem; /* リンクのフォントサイズ */
+    display: block;
+    margin-bottom: 0.3rem;
+    transition: color 0.2s ease;
 }
 
-/* 共通で使う可能性のあるRoot変数 */
-:root {
-    --main-color: #06C755;
-    --bg-color: #E5E5EA;
-    --bubble-bg: #FFFFFF;
-    --bubble-color: #333;
-    --accent-color: #06C755;
-    --font-family: 'Helvetica Neue', 'Segoe UI', sans-serif;
+.topic-card a:hover {
+    color: var(--accent-color); /* ホバーでアクセントカラーに */
+}
+
+.topic-card div {
+    font-size: 0.9rem;
+    color: var(--light-text-color); /* 日付の文字色 */
+}
+
+.no-topics {
+    text-align: center;
+    color: var(--light-text-color);
+    padding: 2rem;
+    font-size: 1.1rem;
+}
+
+
+/* --- Form & Button Styles (common for all pages) --- */
+input, textarea {
+    width: 100%;
+    padding: 0.75rem; /* パディングを増やす */
+    margin-top: 0.5rem;
+    margin-bottom: 1.2rem; /* 下の余白を増やす */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    font-size: 1rem;
+    resize: vertical; /* テキストエリアのみ縦方向のリサイズを許可 */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--main-color);
+    box-shadow: 0 0 0 3px rgba(6, 199, 85, 0.2); /* フォーカス時のシャドウ */
+}
+
+button {
+    background-color: var(--main-color);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.8rem; /* ボタンのパディングを増やす */
+    font-size: 1.1rem; /* ボタンのフォントサイズ */
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    display: inline-block; /* ボタンを中央寄せしやすくする */
+    text-align: center;
+}
+
+button:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-1px); /* ホバーで少し浮き上がる */
+}
+
+
+/* --- Footer Styles --- */
+footer {
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 1.5rem; /* パディングを増やす */
+    color: var(--light-text-color);
+    background-color: var(--background-medium); /* フッターの背景色 */
+    border-top: 1px solid var(--border-color);
+    margin-top: 2rem; /* メインコンテンツとの間に余白 */
+}
+
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    main {
+        margin: 1.5rem auto;
+        padding: 0 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    header nav {
+        flex-direction: column; /* 縦並びにする */
+        gap: 0.8rem;
+    }
+
+    header nav a {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    section {
+        padding: 1rem 1.5rem;
+        border-radius: var(--border-radius-medium); /* 小さな画面では角丸を少し小さく */
+    }
+
+    .topic-card {
+        padding: 1rem 1.2rem;
+        font-size: 0.95rem;
+        border-radius: var(--border-radius-small);
+    }
+
+    .topic-card a {
+        font-size: 1.1rem;
+    }
+
+    button {
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+    }
 }
