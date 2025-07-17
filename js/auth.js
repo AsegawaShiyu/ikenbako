@@ -1,52 +1,63 @@
-// 認証関連のロジック
+// js/auth.js
+// Firebase Authentication のインポート
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import { app } from './firebaseConfig.js'; // firebaseConfig.jsからFirebaseアプリのインスタンスをインポート
 
-const ADMIN_USERS = [
-    { username: "admin", password: "iken2025" },
-    // 必要に応じてユーザー追加可
-];
-
-const MAX_LOGIN_ATTEMPTS = 5;
-let attemptCount = 0;
+const auth = getAuth(app); // Firebase Authサービスを初期化
 
 /**
- * ログイン処理
+ * ユーザー名（メールアドレス）とパスワードでログインする
+ * @param {string} email - ユーザーのメールアドレス
+ * @param {string} password - ユーザーのパスワード
+ * @returns {Promise<UserCredential>} ログイン成功時のPromise
  */
-function login() {
-    const usernameInput = document.getElementById("username");
-    const passwordInput = document.getElementById("password");
-    const errorBox = document.getElementById("error");
-
-    const uname = usernameInput.value.trim();
-    const pw = passwordInput.value;
-
-    const matchedUser = ADMIN_USERS.find(user => user.username === uname && user.password === pw);
-
-    if (matchedUser) {
-        localStorage.setItem("loggedIn", "true");
-        errorBox.textContent = "";
-        window.location.href = "admin.html";
-    } else {
-        attemptCount++;
-        errorBox.textContent = "ユーザー名またはパスワードが間違っています。";
-        if (attemptCount >= MAX_LOGIN_ATTEMPTS) {
-            errorBox.textContent = "ログイン試行が多すぎます。しばらくしてから再試行してください。";
-            document.querySelector("button").disabled = true; // ボタンを無効化
-        }
+export async function login(email, password) {
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log("ログイン成功:", userCredential.user);
+        // localStorageにログイン状態を保存する必要がなければ削除可
+        localStorage.setItem("loggedIn", "true"); // LocalStorageはFirebaseとは独立した認証フローを想定する場合
+        return userCredential;
+    } catch (error) {
+        console.error("ログインエラー:", error.code, error.message);
+        localStorage.removeItem("loggedIn"); // エラー時は削除
+        throw error; // エラーを呼び出し元に伝える
     }
 }
 
 /**
- * ログアウト処理
+ * 現在のユーザーをログアウトさせる
+ * @returns {Promise<void>} ログアウト成功時のPromise
  */
-function logout() {
-    localStorage.removeItem("loggedIn");
-    window.location.href = "index.html"; // トップページへリダイレクト
+export async function logout() {
+    try {
+        await signOut(auth);
+        console.log("ログアウト成功");
+        localStorage.removeItem("loggedIn"); // LocalStorageのログイン状態を削除
+        window.location.href = "index.html"; // ログアウト後、トップページへリダイレクト
+    } catch (error) {
+        console.error("ログアウトエラー:", error.code, error.message);
+        alert("ログアウト中にエラーが発生しました。");
+    }
 }
 
 /**
- * ログイン状態をチェックする
- * @returns {boolean} ログインしていればtrue、そうでなければfalse
+ * 現在の認証状態を監視する（ページロード時などに使用）
+ * @param {Function} callback - 認証状態が変更されたときに呼び出される関数 (userオブジェクトを引数にとる)
  */
-function isLoggedIn() {
-    return localStorage.getItem("loggedIn") === "true";
+export function listenForAuthChanges(callback) {
+    onAuthStateChanged(auth, callback);
+}
+
+/**
+ * ユーザーがログインしているかチェック（Firebaseの認証状態をベースにする）
+ * @returns {Promise<boolean>} ログインしていればtrue
+ */
+export function isLoggedInFirebase() {
+    return new Promise(resolve => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            unsubscribe(); // 一度だけチェックしたら監視を解除
+            resolve(!!user); // userオブジェクトがあればtrue
+        });
+    });
 }
