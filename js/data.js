@@ -1,4 +1,11 @@
 // localStorageとのデータやり取りを管理するモジュール
+import { db } from './firebaseConfig.js';
+import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+
+export async function loadTopics() {
+  const querySnapshot = await getDocs(collection(db, "topics"));
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
 
 // --- Topics関連 ---
 /**
