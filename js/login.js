@@ -2,9 +2,9 @@
 import { login } from './auth.js'; // auth.jsからlogin関数をインポート
 
 document.addEventListener('DOMContentLoaded', () => {
-  const loginButton = document.getElementById('loginButton');
-  const usernameInput = document.getElementById('username');
-  const passwordInput = document.getElementById('password');
+  const loginButton = document.getElementById('loginButton'); // HTMLとIDを合わせる
+  const usernameInput = document.getElementById('emailInput');  // HTMLとIDを合わせる
+  const passwordInput = document.getElementById('passwordInput');// HTMLとIDを合わせる
   const errorBox = document.getElementById('error');
 
   // ログインボタンにイベントリスナーを設定
