@@ -104,3 +104,32 @@ input[type="checkbox"] {
 .answer-delete-btn:hover {
     background: #c9302c;
 }
+/* topic-itemのレイアウトを調整 */
+.topic-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem; /* 各要素間のスペース */
+}
+
+.topic-info {
+    flex-grow: 1; /* 名前部分が伸びるように */
+}
+
+.topic-answer-count {
+    flex-shrink: 0; /* 縮まないように */
+    font-weight: bold;
+    color: #333;
+}
+
+.topic-actions {
+    flex-shrink: 0;
+    text-align: right;
+}
+
+/* answers-containerが全体に広がるように */
+.answers-container {
+    width: 100%;
+    flex-basis: 100%; /* 新しい行に配置 */
+}
