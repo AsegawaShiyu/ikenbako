@@ -4,8 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>話題に回答</title>
-  <link rel="stylesheet" href="./css/common.css">
-  <link rel="stylesheet" href="./css/topic.css">
+  <link rel="stylesheet" href="./css/common.css"> 
+  <link rel="stylesheet" href="./css/topic.css"> 
+  <style>
+    .back-button {
+      display: inline-block;
+      margin: 1rem;
+      padding: 0.5rem 1rem;
+      background-color: #06C755;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+    .back-button:hover {
+      background-color: #05a147;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -13,6 +27,8 @@
   </header>
 
   <main>
+    <a href="index.html" class="back-button">← トピック一覧に戻る</a>
+
     <section id="topicHeader">
       <h2 id="topicTitle">タイトル読み込み中...</h2>
       <p id="topicDeadline"></p>
@@ -38,7 +54,7 @@
     </section>
   </main>
 
-  <script type="module" src="./js/firebaseConfig.js"></script>
-  <script type="module" src="./js/topic.js"></script>
+  <script src="./js/data.js"></script>
+  <script src="./js/public.js"></script>
 </body>
 </html>
