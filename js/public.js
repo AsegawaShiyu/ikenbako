@@ -5,8 +5,8 @@ import {
   getDocs,
   query,
   orderBy,
-  where, // ✅ where をインポート
-  Timestamp // ✅ Timestamp をインポート
+  where,
+  Timestamp
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 
 const container = document.getElementById('topicsContainer');
@@ -25,7 +25,7 @@ function createTopicCard(id, title, deadline) {
 }
 
 async function loadTopics() {
-  // ✅ 現在時刻以降の期限を持つ話題のみを取得するクエリに変更
+  // ✅ 現在時刻以降の期限を持つ話題のみを取得するクエリ
   const q = query(
     collection(db, 'topics'),
     where('deadline', '>=', Timestamp.now()), // 締め切りが現在時刻以降のもの
