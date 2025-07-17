@@ -4,42 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>回答者ログイン</title>
-  <link rel="stylesheet" href="./css/common.css"> <style>
-    /* bodyはcommon.cssで設定済み */
+  <link rel="stylesheet" href="../css/common.css">
+  <style>
+    /* body全体の高さをビューポートに合わせ、Flexboxで子要素を中央に配置 */
+    body {
+      display: flex;
+      flex-direction: column; /* 縦方向に配置 */
+      align-items: center;    /* 水平方向の中央寄せ */
+      justify-content: center; /* 垂直方向の中央寄せ */
+      min-height: 100vh;      /* ページの最小高さをビューポートの高さに */
+      margin: 0;              /* bodyのデフォルトマージンをリセット */
+      background-color: #f2f2f2; /* ログインページ独自の背景色 */
+      font-family: 'Noto Sans JP', sans-serif, 'Segoe UI', Tahoma, Geneva, Verdana; /* common.cssと同じフォント */
+    }
+
     .login-box {
       background-color: white;
       padding: 2rem;
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       max-width: 300px;
-      width: 100%;
-      /* login.htmlのbodyはFlexboxで中央寄せする */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0; /* bodyのmarginをリセット */
+      width: 90%; /* 小さい画面でも適切に表示されるように幅を調整 */
+      text-align: center; /* h1, input, buttonをlogin-box内で中央寄せ */
     }
+    
     h1 {
       color: #06C755;
-      text-align: center;
+      margin-bottom: 1.5rem; /* タイトルの下マージンを少し増やす */
     }
-    /* input, button は common.cssで設定済み */
+    
     input {
-        margin-top: 0.5rem;
-        margin-bottom: 0.5rem; /* 入力フィールド間のマージン調整 */
+      width: calc(100% - 20px); /* 左右のパディング分を考慮して調整 */
+      padding: 0.6rem 10px; /* パディングを調整 */
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
     }
+    
     button {
-      margin-top: 1rem;
+      margin-top: 1.5rem; /* ボタンの上マージンを増やす */
+      width: 100%;
+      padding: 0.7rem;
+      font-size: 1.1rem;
+      background-color: #06C755;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
     }
+    
     button:hover {
       background-color: #05a147;
     }
+    
     .error {
       color: red;
       text-align: center;
       margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    /* モバイル向け調整 */
+    @media (max-width: 400px) {
+        .login-box {
+            padding: 1.5rem;
+        }
+        input {
+            padding: 0.5rem 8px;
+        }
+        button {
+            padding: 0.6rem;
+            font-size: 1rem;
+        }
     }
   </style>
 </head>
@@ -48,14 +87,10 @@
     <h1>回答者ログイン</h1>
     <input type="text" id="username" placeholder="ユーザー名">
     <input type="password" id="password" placeholder="パスワード">
-    <button onclick="login()">ログイン</button> <div class="error" id="error"></div>
+    <button onclick="login()">ログイン</button>
+    <div class="error" id="error"></div>
   </div>
 
-  <script src="./js/auth.js"></script>
-  <script>
-    // loginボタンにイベントリスナーを設定（インラインonclickでも動作するが、jsファイルに記述するのが一般的）
-    // DOMContentLoadedイベントでauth.jsのlogin関数を呼び出すように変更することも可能
-    // 現在のhtmlのonclickはauth.jsを読み込んでいれば動作します。
-  </script>
+  <script src="../js/auth.js"></script>
 </body>
 </html>
