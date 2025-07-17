@@ -44,16 +44,13 @@
 <body>
   <div class="login-box">
     <h1>回答者ログイン</h1>
-    <input type="text" id="username" placeholder="ユーザー名">
-    <input type="password" id="password" placeholder="パスワード">
-    <button id="loginBtn">ログイン</button>
+    <input type="text" id="emailInput" placeholder="メールアドレス">
+    <input type="password" id="passwordInput" placeholder="パスワード">
+    <button id="loginButton">ログイン</button>
     <div class="error" id="error"></div>
   </div>
 
-  <script type="module">
-    import { login } from './js/auth.js';
+  <script type="module" src="./js/login.js"></script>
 
-    document.getElementById("loginBtn").addEventListener("click", login);
-  </script>
 </body>
 </html>
