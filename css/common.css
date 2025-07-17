@@ -1,3 +1,7 @@
+/* Google Fontsの読み込み（例: Noto Sans JP） */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+
 /* 共通で使う可能性のあるRoot変数 */
 :root {
     --main-color: #06C755; /* LINEグリーンに似た色 */
@@ -16,8 +20,6 @@
     --font-family-primary: 'Noto Sans JP', sans-serif, 'Segoe UI', Tahoma, Geneva, Verdana;
 }
 
-/* Google Fontsの読み込み（例: Noto Sans JP） */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
 
 * {
     box-sizing: border-box;
