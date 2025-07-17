@@ -1,3 +1,4 @@
+// admin.js
 import { db } from './firebaseConfig.js';
 import {
   collection,
@@ -30,72 +31,80 @@ addButton.addEventListener('click', async () => {
   const deadline = new Date(deadlineValue);
   const createdAt = new Date();
 
-  try {
-    await addDoc(collection(db, 'topics'), {
-      title,
-      deadline: Timestamp.fromDate(deadline),
-      createdAt: Timestamp.fromDate(createdAt)
-    });
-    console.log('話題作成成功');
-    titleInput.value = '';
-    deadlineInput.value = '';
-    loadTopics();
-  } catch (error) {
-    console.error('話題作成エラー:', error.message);
-    alert('話題の作成に失敗しました: ' + error.message);
-  }
+  await addDoc(collection(db, 'topics'), {
+    title,
+    deadline: Timestamp.fromDate(deadline),
+    createdAt: Timestamp.fromDate(createdAt)
+  });
+
+  titleInput.value = '';
+  deadlineInput.value = '';
+
+  loadTopics();
 });
 
 // 話題一覧読み込み
 async function loadTopics() {
   const q = query(collection(db, 'topics'), orderBy('createdAt', 'desc'));
-  try {
-    const querySnapshot = await getDocs(q);
-    const filter = filterInput.value.trim().toLowerCase();
+  const querySnapshot = await getDocs(q);
+  const filter = filterInput.value.trim().toLowerCase();
 
-    topicsContainer.innerHTML = '';
+  topicsContainer.innerHTML = '';
 
-    querySnapshot.forEach(docSnap => {
-      const data = docSnap.data();
-      const title = data.title;
-      const deadline = data.deadline.toDate().toLocaleDateString("ja-JP");
+  querySnapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const title = data.title;
+    const deadline = data.deadline.toDate().toLocaleDateString("ja-JP");
 
-      if (!filter || title.toLowerCase().includes(filter)) {
-        const div = document.createElement('div');
-        div.classList.add('topic-box');
-        div.innerHTML = `
-          <strong>${title}</strong><br>
-          募集期限: ${deadline}
-          <button data-id="${docSnap.id}" class="delete-btn">削除</button>
-        `;
-        topicsContainer.appendChild(div);
+    if (!filter || title.toLowerCase().includes(filter)) {
+      const div = document.createElement('div');
+      div.classList.add('topic-box');
+      div.innerHTML = `
+        <strong>${title}</strong><br>
+        募集期限: ${deadline}<br>
+        <button data-id="${docSnap.id}" class="delete-btn">削除</button>
+        <button data-id="${docSnap.id}" class="view-answers-btn">回答を見る</button>
+        <div class="answers" id="answers-${docSnap.id}" style="margin-top:10px;"></div>
+      `;
+      topicsContainer.appendChild(div);
+    }
+  });
+
+  // 削除ボタン
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      if (confirm('この話題を削除しますか？')) {
+        await deleteDoc(doc(db, 'topics', id));
+        loadTopics();
       }
     });
+  });
 
-    // 削除ボタンにイベント追加
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.dataset.id;
-        if (confirm('この話題を削除しますか？')) {
-          try {
-            await deleteDoc(doc(db, 'topics', id));
-            console.log('削除成功:', id);
-            loadTopics();
-          } catch (error) {
-            console.error('削除エラー:', error.message);
-            alert('削除に失敗しました: ' + error.message);
-          }
-        }
+  // 回答を見るボタン
+  document.querySelectorAll('.view-answers-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const topicId = btn.dataset.id;
+      const answersDiv = document.getElementById(`answers-${topicId}`);
+      answersDiv.innerHTML = '<em>読み込み中...</em>';
+      const answerRef = collection(db, 'topics', topicId, 'answers');
+      const answersSnap = await getDocs(answerRef);
+
+      if (answersSnap.empty) {
+        answersDiv.innerHTML = '<p>まだ投稿がありません。</p>';
+        return;
+      }
+
+      let html = '<ul>';
+      answersSnap.forEach(answer => {
+        const a = answer.data();
+        html += `<li><strong>${a.name || '匿名'}:</strong> ${a.message}</li>`;
       });
+      html += '</ul>';
+      answersDiv.innerHTML = html;
     });
-  } catch (error) {
-    console.error('話題読み込みエラー:', error.message);
-    alert('話題一覧の取得に失敗しました: ' + error.message);
-  }
+  });
 }
 
-// 絞り込み入力
 filterInput.addEventListener('input', loadTopics);
-
-// 初期ロード
 loadTopics();
