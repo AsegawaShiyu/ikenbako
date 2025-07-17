@@ -9,7 +9,8 @@ import {
     orderBy,
     Timestamp,
     deleteDoc,
-    doc
+    doc,
+    getCountFromServer
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 
 // DOM要素取得
@@ -76,38 +77,70 @@ async function loadTopics() {
     const querySnapshot = await getDocs(q);
     const filter = filterInput.value.trim().toLowerCase();
 
-    topicsContainer.innerHTML = '';
+    topicsContainer.innerHTML = '<em>読み込み中...</em>'; // 読み込み中の表示
 
     if (querySnapshot.empty && !filter) {
         topicsContainer.innerHTML = '<p class="no-topics">まだ話題がありません。</p>';
         return;
     }
 
-    let hasDisplayedTopics = false; // フィルター後の話題があるかチェック
+    let displayedTopicsHTML = '';
+    let hasDisplayedTopics = false;
 
-    querySnapshot.forEach(docSnap => {
+    // 非同期処理をforループで扱う
+    for (const docSnap of querySnapshot.docs) {
         const data = docSnap.data();
         const title = data.title;
-        const deadline = data.deadline.toDate().toLocaleDateString("ja-JP");
 
         if (!filter || title.toLowerCase().includes(filter)) {
-            const div = document.createElement('div');
-            // 以前のtopic-itemクラスを使っても良いですが、topic-boxでもOK
-            div.classList.add('topic-item'); // または 'topic-box'
-            div.innerHTML = `
-                <div class="topic-info">
-                    <strong>${title}</strong><br>
-                    募集期限: ${deadline}
+            // ✅ 回答数を取得
+            const answersRef = collection(db, 'topics', docSnap.id, 'answers');
+            const countSnapshot = await getCountFromServer(answersRef);
+            const answerCount = countSnapshot.data().count;
+
+            const deadline = data.deadline.toDate().toLocaleDateString("ja-JP");
+
+            // ✅ 回答数を表示するHTMLを追加
+            displayedTopicsHTML += `
+                <div class="topic-item">
+                    <div class="topic-info">
+                        <strong>${title}</strong><br>
+                        募集期限: ${deadline}
+                    </div>
+                    <div class="topic-answer-count">
+                        回答: ${answerCount}件
+                    </div>
+                    <div class="topic-actions">
+                        <button data-id="${docSnap.id}" class="small-btn delete-btn">削除</button>
+                        <button data-id="${docSnap.id}" class="small-btn view-answers-btn">回答を見る</button>
+                    </div>
+                    <div class="answers-container" id="answers-${docSnap.id}" style="display:none;"></div>
                 </div>
-                <div class="topic-actions">
-                    <button data-id="${docSnap.id}" class="small-btn delete-btn">削除</button>
-                    <button data-id="${docSnap.id}" class="small-btn view-answers-btn">回答を見る</button>
-                </div>
-                <div class="answers-container" id="answers-${docSnap.id}" style="display:none;"></div>
             `;
-            topicsContainer.appendChild(div);
             hasDisplayedTopics = true;
         }
+    }
+    
+    // 最終的なHTMLをコンテナに設定
+    if (hasDisplayedTopics) {
+        topicsContainer.innerHTML = displayedTopicsHTML;
+    } else if (filter) {
+        topicsContainer.innerHTML = '<p class="no-topics">該当する話題がありません。</p>';
+    } else {
+        topicsContainer.innerHTML = '<p class="no-topics">まだ話題がありません。</p>';
+    }
+
+
+    // --- イベントリスナーの再設定（ここから下は変更なし） ---
+    // 削除ボタン
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            if (confirm('この話題を削除しますか？')) {
+                await deleteDoc(doc(db, 'topics', id));
+                loadTopics();
+            }
+        });
     });
 
     if (!hasDisplayedTopics && filter) {
