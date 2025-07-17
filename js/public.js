@@ -4,55 +4,41 @@ import {
   collection,
   getDocs,
   query,
-  where,
-  orderBy,
-  Timestamp
+  orderBy
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 
-const topicsSection = document.getElementById('topics-list');
+const container = document.getElementById('topicsContainer');
+
+function createTopicCard(id, title, deadline) {
+  const card = document.createElement('a');
+  card.href = `topic.html?id=${id}`;
+  card.className = 'topic-card';
+
+  card.innerHTML = `
+    <div class="topic-title">${title}</div>
+    <div class="topic-deadline">募集期限: ${deadline}</div>
+  `;
+
+  return card;
+}
 
 async function loadTopics() {
-  const now = new Date();
-  const topicsRef = collection(db, "topics");
-  const q = query(topicsRef, orderBy("deadline", "asc"));
+  const q = query(collection(db, 'topics'), orderBy('createdAt', 'desc'));
   const querySnapshot = await getDocs(q);
+  container.innerHTML = '';
 
-  const topics = [];
-  querySnapshot.forEach(doc => {
-    const data = doc.data();
-    const deadline = data.deadline?.toDate?.() || new Date(0);
+  querySnapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const id = docSnap.id;
+    const title = data.title;
+    const deadline = data.deadline.toDate().toLocaleDateString("ja-JP");
 
-    // 締切前の話題のみ
-    if (deadline >= now) {
-      topics.push({ id: doc.id, ...data });
-    }
+    const card = createTopicCard(id, title, deadline);
+    container.appendChild(card);
   });
-
-  renderTopics(topics);
 }
 
-function renderTopics(topics) {
-  const container = document.createElement('ul');
-  container.classList.add('topics-list');
-
-  if (topics.length === 0) {
-    topicsSection.innerHTML += `<p>現在、募集中の話題はありません。</p>`;
-    return;
-  }
-
-  topics.forEach(topic => {
-    const li = document.createElement('li');
-    const deadlineText = topic.deadline?.toDate?.().toLocaleDateString("ja-JP") || '未設定';
-    li.innerHTML = `
-      <a href="topic.html?id=${topic.id}">
-        <strong>${topic.title}</strong><br>
-        募集期限: ${deadlineText}
-      </a>
-    `;
-    container.appendChild(li);
-  });
-
-  topicsSection.appendChild(container);
+// 初期ロード
+if (container) {
+  loadTopics();
 }
-
-loadTopics();
