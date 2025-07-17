@@ -1,3 +1,4 @@
+// topic.js（送信処理を含む）
 import { db } from './firebaseConfig.js';
 import {
   doc,
@@ -7,7 +8,6 @@ import {
   Timestamp
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 
-// URLクエリから話題IDを取得
 const params = new URLSearchParams(window.location.search);
 const topicId = params.get('id');
 
@@ -19,7 +19,6 @@ const messageInput = document.getElementById('message');
 const answersSection = document.getElementById('answers');
 const answerList = document.getElementById('answerList');
 
-// 話題の情報を取得
 async function loadTopic() {
   if (!topicId) {
     alert('話題IDが指定されていません');
@@ -45,7 +44,6 @@ async function loadTopic() {
   }
 }
 
-// フォーム送信処理
 answerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -59,19 +57,20 @@ answerForm.addEventListener('submit', async (e) => {
 
   const answerRef = collection(doc(db, 'topics', topicId), 'answers');
 
-  await addDoc(answerRef, {
-    name,
-    message,
-    createdAt: Timestamp.fromDate(new Date())
-  }).then(() => {
-    console.log('保存成功');
+  try {
+    const docRef = await addDoc(answerRef, {
+      name,
+      message,
+      createdAt: Timestamp.fromDate(new Date())
+    });
+    console.log('保存成功:', docRef.id);
     usernameInput.value = '';
     messageInput.value = '';
     alert('送信されました');
-  }).catch((error) => {
-    console.error('保存エラー', error);
-    alert('送信に失敗しました');
-  });
+  } catch (error) {
+    console.error('保存エラー:', error.message);
+    alert('送信に失敗しました: ' + error.message);
+  }
 });
 
 loadTopic();
