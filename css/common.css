@@ -1,0 +1,40 @@
+body {
+    font-family: sans-serif;
+    max-width: 600px; /* 全ページで共通の最大幅 */
+    margin: auto;
+    padding: 1rem;
+    background-color: #f2f2f2; /* 全体的な背景色として設定 */
+}
+
+input, textarea {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem; /* 全体的な入力フィールドのパディング */
+    border: 1px solid #ccc;
+    border-radius: 8px; /* 全体的な角丸設定 */
+    font-size: 1rem;
+}
+
+button {
+    background-color: #06C755;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #059a44;
+}
+
+/* 共通で使う可能性のあるRoot変数 */
+:root {
+    --main-color: #06C755;
+    --bg-color: #E5E5EA;
+    --bubble-bg: #FFFFFF;
+    --bubble-color: #333;
+    --accent-color: #06C755;
+    --font-family: 'Helvetica Neue', 'Segoe UI', sans-serif;
+}
