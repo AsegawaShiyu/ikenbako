@@ -133,3 +133,41 @@ input[type="checkbox"] {
     width: 100%;
     flex-basis: 100%; /* 新しい行に配置 */
 }
+.answer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    transition: background-color 0.3s;
+}
+
+.answer-content {
+    flex-grow: 1;
+}
+
+.answer-actions {
+    flex-shrink: 0;
+}
+
+.mark-as-read-btn {
+    background-color: #007bff; /* 青系の色 */
+}
+.mark-as-read-btn:hover {
+    background-color: #0056b3;
+}
+
+.read-status {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--main-color); /* common.cssのメインカラー */
+}
+
+/* 既読になった回答のスタイル */
+.answer-item.is-read {
+    background-color: #f0f0f0; /* 背景をグレーに */
+}
+
+.answer-item.is-read .answer-meta,
+.answer-item.is-read .answer-message {
+    color: #888; /* 文字色を薄くする */
+}
