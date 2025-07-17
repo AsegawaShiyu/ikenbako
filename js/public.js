@@ -4,7 +4,9 @@ import {
   collection,
   getDocs,
   query,
-  orderBy
+  orderBy,
+  where, // ✅ where をインポート
+  Timestamp // ✅ Timestamp をインポート
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 
 const container = document.getElementById('topicsContainer');
@@ -23,9 +25,20 @@ function createTopicCard(id, title, deadline) {
 }
 
 async function loadTopics() {
-  const q = query(collection(db, 'topics'), orderBy('createdAt', 'desc'));
+  // ✅ 現在時刻以降の期限を持つ話題のみを取得するクエリに変更
+  const q = query(
+    collection(db, 'topics'),
+    where('deadline', '>=', Timestamp.now()), // 締め切りが現在時刻以降のもの
+    orderBy('deadline', 'asc') // 締め切りが近い順に並び替え
+  );
+
   const querySnapshot = await getDocs(q);
   container.innerHTML = '';
+
+  if (querySnapshot.empty) {
+    container.innerHTML = '<p class="no-topics">現在募集中の話題はありません。</p>';
+    return;
+  }
 
   querySnapshot.forEach(docSnap => {
     const data = docSnap.data();
