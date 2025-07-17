@@ -143,24 +143,6 @@ async function loadTopics() {
         });
     });
 
-    if (!hasDisplayedTopics && filter) {
-        topicsContainer.innerHTML = '<p class="no-topics">該当する話題がありません。</p>';
-    } else if (!hasDisplayedTopics && querySnapshot.empty) {
-         topicsContainer.innerHTML = '<p class="no-topics">まだ話題がありません。</p>';
-    }
-
-
-    // 削除ボタン
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
-            if (confirm('この話題を削除しますか？')) {
-                await deleteDoc(doc(db, 'topics', id));
-                loadTopics();
-            }
-        });
-    });
-
     // 回答を見るボタン
     document.querySelectorAll('.view-answers-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
@@ -187,7 +169,6 @@ async function loadTopics() {
             let html = '<ul style="list-style: none; padding: 0;">'; // リストスタイルをリセット
             answersSnap.forEach(answer => {
                 const a = answer.data();
-                // FirestoreのTimestampをDateオブジェクトに変換
                 const timestamp = a.timestamp && a.timestamp.toDate ? a.timestamp.toDate().toLocaleString("ja-JP") : '日時不明';
                 html += `
                     <li class="answer-item">
@@ -200,6 +181,5 @@ async function loadTopics() {
         });
     });
 }
-
 // 初期ロードはDOMContentLoadedイベント内でlistenForAuthChangesが呼び出す
 // loadTopics(); // この行はDOMContentLoadedの外では不要になる
