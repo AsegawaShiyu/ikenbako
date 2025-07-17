@@ -1,0 +1,76 @@
+/* login.html 専用スタイル */
+
+/* body全体の高さをビューポートに合わせ、Flexboxで子要素を中央に配置 */
+body {
+  display: flex;
+  flex-direction: column; /* 縦方向に配置 */
+  align-items: center;    /* 水平方向の中央寄せ */
+  justify-content: center; /* 垂直方向の中央寄せ */
+  min-height: 100vh;      /* ページの最小高さをビューポートの高さに */
+  margin: 0;              /* bodyのデフォルトマージンをリセット */
+  background-color: #f2f2f2; /* ログインページ独自の背景色 */
+  font-family: 'Noto Sans JP', sans-serif, 'Segoe UI', Tahoma, Geneva, Verdana; /* common.cssと同じフォント */
+}
+
+.login-box {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  max-width: 300px;
+  width: 90%; /* 小さい画面でも適切に表示されるように幅を調整 */
+  text-align: center; /* h1, input, buttonをlogin-box内で中央寄せ */
+}
+
+h1 {
+  color: #06C755;
+  margin-bottom: 1.5rem; /* タイトルの下マージンを少し増やす */
+}
+
+input {
+  width: calc(100% - 20px); /* 左右のパディング分を考慮して調整 */
+  padding: 0.6rem 10px; /* パディングを調整 */
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+button {
+  margin-top: 1.5rem; /* ボタンの上マージンを増やす */
+  width: 100%;
+  padding: 0.7rem;
+  font-size: 1.1rem;
+  background-color: #06C755;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #05a147;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+/* モバイル向け調整 */
+@media (max-width: 400px) {
+    .login-box {
+        padding: 1.5rem;
+    }
+    input {
+        padding: 0.5rem 8px;
+    }
+    button {
+        padding: 0.6rem;
+        font-size: 1rem;
+    }
+}
