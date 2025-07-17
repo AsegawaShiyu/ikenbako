@@ -10,7 +10,8 @@ import {
     Timestamp,
     deleteDoc,
     doc,
-    getCountFromServer
+    getCountFromServer,
+    updateDoc
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 
 // DOM要素取得
@@ -145,41 +146,67 @@ async function loadTopics() {
 
     // 回答を見るボタン
     document.querySelectorAll('.view-answers-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const topicId = btn.dataset.id;
-            const answersDiv = document.getElementById(`answers-${topicId}`);
+    btn.addEventListener('click', async (e) => {
+        const topicId = btn.dataset.id;
+        const answersDiv = document.getElementById(`answers-${topicId}`);
 
-            // 表示/非表示の切り替え
-            if (answersDiv.style.display === 'block') {
-                answersDiv.style.display = 'none';
-                answersDiv.innerHTML = ''; // 非表示時に内容をクリア
-                return;
-            }
+        if (answersDiv.style.display === 'block') {
+            answersDiv.style.display = 'none';
+            answersDiv.innerHTML = '';
+            return;
+        }
 
-            answersDiv.style.display = 'block';
-            answersDiv.innerHTML = '<em>読み込み中...</em>';
-            const answerRef = collection(db, 'topics', topicId, 'answers');
-            const answersSnap = await getDocs(answerRef);
+        answersDiv.style.display = 'block';
+        answersDiv.innerHTML = '<em>回答を読み込み中...</em>';
+        
+        const answerRef = collection(db, 'topics', topicId, 'answers');
+        const answersSnap = await getDocs(query(answerRef, orderBy('createdAt', 'asc')));
 
-            if (answersSnap.empty) {
-                answersDiv.innerHTML = '<p>まだ投稿がありません。</p>';
-                return;
-            }
+        if (answersSnap.empty) {
+            answersDiv.innerHTML = '<p>まだ投稿がありません。</p>';
+            return;
+        }
 
-            let html = '<ul style="list-style: none; padding: 0;">'; // リストスタイルをリセット
-            answersSnap.forEach(answer => {
-                const a = answer.data();
-                const timestamp = a.timestamp && a.timestamp.toDate ? a.timestamp.toDate().toLocaleString("ja-JP") : '日時不明';
-                html += `
-                    <li class="answer-item">
+        let html = '<ul style="list-style: none; padding: 0;">';
+        answersSnap.forEach(answerDoc => {
+            const a = answerDoc.data();
+            const timestamp = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().toLocaleString("ja-JP") : '日時不明';
+            
+            // ✅ isReadの状態に応じてクラスとボタンを動的に変更
+            const isRead = a.isRead || false;
+            html += `
+                <li class="answer-item ${isRead ? 'is-read' : ''}" data-answer-id="${answerDoc.id}">
+                    <div class="answer-content">
                         <div class="answer-meta">${a.name || '匿名'} (${timestamp})</div>
                         <div class="answer-message">${a.message}</div>
-                        </li>`;
+                    </div>
+                    <div class="answer-actions">
+                        ${!isRead ? `<button class="mark-as-read-btn small-btn">既読にする</button>` : `<span class="read-status">既読</span>`}
+                    </div>
+                </li>`;
+        });
+        html += '</ul>';
+        answersDiv.innerHTML = html;
+
+        // ✅ 「既読にする」ボタンにイベントリスナーを追加
+        answersDiv.querySelectorAll('.mark-as-read-btn').forEach(readBtn => {
+            readBtn.addEventListener('click', async (event) => {
+                const answerItem = event.target.closest('.answer-item');
+                const answerId = answerItem.dataset.answerId;
+
+                // Firestoreのデータを更新
+                const specificAnswerRef = doc(db, 'topics', topicId, 'answers', answerId);
+                await updateDoc(specificAnswerRef, {
+                    isRead: true
+                });
+
+                // UIを即座に更新
+                answerItem.classList.add('is-read');
+                event.target.outerHTML = '<span class="read-status">既読</span>';
             });
-            html += '</ul>';
-            answersDiv.innerHTML = html;
         });
     });
+});
 }
 // 初期ロードはDOMContentLoadedイベント内でlistenForAuthChangesが呼び出す
 // loadTopics(); // この行はDOMContentLoadedの外では不要になる
